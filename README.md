@@ -73,6 +73,19 @@ python infer.py \
 - `lengths`：序列长度
 - `fps`：20
 
+可选保存 MP4 可视化：
+```
+python infer.py \
+  --model_path save/humanml_dec/model000600000.pt \
+  --text_prompt "a person walks forward" \
+  --num_samples 1 \
+  --num_repetitions 1 \
+  --motion_length 6 \
+  --sample_steps 50 \
+  --out outputs/sample.npy \
+  --mp4_dir outputs/sample_mp4
+```
+
 ## 启动服务（FastAPI）
 在本目录执行：
 ```
@@ -84,4 +97,3 @@ bash serve/run_server.sh ../save/humanml_trans_dec_512_bert/model000200000.pt --
 curl -X POST http://127.0.0.1:8000/generate -H "Content-Type: application/json" \
   -d '{"text":"a person walks forward"}' --output results.npy
 ```
-

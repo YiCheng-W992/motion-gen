@@ -53,6 +53,12 @@ def _build_args() -> argparse.Namespace:
         action="store_true",
         help="Force EMA weights if present in the checkpoint.",
     )
+    parser.add_argument(
+        "--mp4_dir",
+        default="",
+        type=str,
+        help="Directory to save MP4 files (set to enable rendering).",
+    )
     args = parser.parse_args()
 
     args_to_overwrite = []
@@ -190,6 +196,40 @@ def main():
         os.makedirs(out_dir, exist_ok=True)
     np.save(args.out, results)
     print(f"Saved results to {args.out}")
+
+    mp4_dir = args.mp4_dir.strip()
+    if mp4_dir:
+        from data_loaders.humanml.utils.plot_script import plot_3d_motion
+        from data_loaders.humanml.utils import paramUtil
+
+        os.makedirs(mp4_dir, exist_ok=True)
+
+        skeleton = paramUtil.kit_kinematic_chain if args.dataset == "kit" else paramUtil.t2m_kinematic_chain
+        total_num_samples = args.num_samples * args.num_repetitions
+        print(f"Rendering {total_num_samples} MP4 files to {mp4_dir}...")
+
+        for rep_i in range(args.num_repetitions):
+            for sample_i in range(args.num_samples):
+                idx = rep_i * args.num_samples + sample_i
+                motion = all_motions[idx].transpose(2, 0, 1)
+                length = int(all_lengths[idx])
+                motion = motion[:length]
+
+                caption = all_text[idx]
+                save_file = f"sample{sample_i:02d}_rep{rep_i:02d}.mp4"
+                save_path = os.path.join(mp4_dir, save_file)
+
+                clip = plot_3d_motion(
+                    save_path,
+                    skeleton,
+                    motion,
+                    title=caption,
+                    dataset=args.dataset,
+                    fps=fps,
+                )
+                clip.write_videofile(save_path, fps=fps, threads=4, logger=None)
+                clip.close()
+        print("MP4 rendering complete.")
 
 
 if __name__ == "__main__":
