@@ -58,7 +58,7 @@ minimal_trans_dec_infer/
 在本目录执行：
 ```
 python infer.py \
-  --model_path ../save/humanml_trans_dec_512_bert/model000600000.pt \
+  --model_path save/humanml_dec/model000600000.pt \
   --text_prompt "a person walks forward" \
   --num_samples 1 \
   --num_repetitions 1 \
