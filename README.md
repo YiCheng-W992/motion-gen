@@ -16,44 +16,6 @@ hf download distilbert/distilbert-base-uncased --local-dir ./language_models/dis
 
 模型放置于save 目录下
 
-## 目录结构
-
-```
-minimal_trans_dec_infer/
-  infer.py
-  model/
-    mdm.py
-    mdm_modules.py
-    rotation2xyz.py
-    BERT/
-      BERT_encoder.py
-  diffusion/
-    gaussian_diffusion.py
-    respace.py
-    nn.py
-    losses.py
-    dpm_solver_pytorch.py
-    spacing/
-      __init__.py
-      timesteps.py
-  utils/
-    model_util.py
-    parser_util.py
-    dist_util.py
-    fixseed.py
-    sampler_util.py
-    misc.py
-    loss_util.py
-  data_loaders/
-    tensors.py
-    humanml_utils.py
-    humanml/
-      common/
-        quaternion.py
-      scripts/
-        motion_process.py
-```
-
 ## 运行推理
 在本目录执行：
 ```
@@ -97,3 +59,15 @@ bash serve/run_server.sh ../save/humanml_trans_dec_512_bert/model000200000.pt --
 curl -X POST http://127.0.0.1:8000/generate -H "Content-Type: application/json" \
   -d '{"text":"a person walks forward"}' --output results.npy
 ```
+
+时间测试：
+
+```
+for i in 1 2 3; do
+  curl -s -o /dev/null -w "run=$i http=%{http_code} total=%{time_total}s\n" \
+    -X POST http://127.0.0.1:8000/generate \
+    -H "Content-Type: application/json" \
+    -d '{"text":"a person walking forward"}'
+done
+```
+

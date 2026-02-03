@@ -104,7 +104,7 @@ def _init_state() -> ServerState:
     use_ema = None
     if use_ema_env is not None:
         use_ema = use_ema_env.lower() in ("1", "true", "yes")
-    gen_steps = int(os.environ.get("MDM_SAMPLE_STEPS", "100"))
+    gen_steps = int(os.environ.get("MDM_STEPS", "50"))
 
     args = _build_args(model_path, device, use_ema)
     dist_util.setup_dist(args.device)
